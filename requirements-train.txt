@@ -1,0 +1,2 @@
+fastai2==0.0.16
+transformers==2.8.0
