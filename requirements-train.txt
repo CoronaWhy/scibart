@@ -1,2 +1,4 @@
 fastai2==0.0.16
+ipykernel==5.2.0
+pyarrow==0.16.0
 transformers==2.8.0
