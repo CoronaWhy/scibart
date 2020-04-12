@@ -14,8 +14,8 @@ COPY data.zip .
 RUN mkdir data && unzip data.zip -d data && rm data.zip
 
 # copy code
-COPY src .
+RUN mkdir src
+COPY src src/.
 
 # run training
-RUN ls
-RUN python3 finetuning-bart.py
+RUN python3 src/finetuning-bart.py
