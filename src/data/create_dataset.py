@@ -9,8 +9,14 @@ import numpy as np
 import pandas as pd
 
 
+# data settings
+DATASET_VERSION = '1.0.0'  # dataset version tag
+DIR_RAW_DATA = 'raw_data'  # dir with downloaded and unzipped datasets
+DIR_DATA = 'data'  # output dir
+NCHUNKS = 40   # number of data frame splits and parquet output files
 
-paths = glob.glob('../../raw_data/*/', recursive=True)
+# find paths
+paths = glob.glob(os.path.join(DIR_RAW_DATA, '*'), recursive=True)
 paths = [Path(p) for p in paths]
 
 # columns to keep from original datasets
@@ -24,14 +30,13 @@ cols2keep = {
 }
 
 # create data directory
-output_dir = Path('../../data')
-if not os.path.exists(output_dir):
-    os.makedirs(output_dir)
+if not os.path.exists(DIR_DATA):
+    os.makedirs(DIR_DATA)
 
 # appends everything to the same dataframe. not great, but so far it's
 # managable
 data = []
-for p in paths:
+for p in tqdm(paths):
 
     name = os.path.split(p)[-1]
 
@@ -73,12 +78,14 @@ for p in paths:
 data = pd.concat(data, ignore_index=True)
 
 # split dataframe into smaller chunks
-nchunks = 40
-datas = np.array_split(data, nchunks)
+datas = np.array_split(data, NCHUNKS)
 
 # save dataframe as parquet files
+print(f"writing dataset ({NCHUNKS} files) to {DIR_DATA}{os.sep}")
 for ix, d in enumerate(tqdm(datas)):
+    filename = f'data{str(ix).zfill(2)}-{DATASET_VERSION}'
     d.to_parquet(
-        output_dir / f'data{str(ix).zfill(2)}.parquet.gzip',
+        os.path.join(DIR_DATA, f'{filename}.parquet.gzip'),
         compression='gzip',
     )
+    print(f'{filename} done')
