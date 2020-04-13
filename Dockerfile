@@ -9,13 +9,13 @@ COPY requirements-train.txt .
 RUN pip install --upgrade pip
 RUN pip install -r requirements-train.txt
 
-# create data directory
-COPY data.zip .
-RUN mkdir data && unzip data.zip -d data && rm data.zip
+# copy data
+RUN mkdir data
+COPY data data/.
 
-# copy code
+# copy model
 RUN mkdir src
 COPY src src/.
 
 # run training
-RUN python3 src/finetuning-bart.py
+RUN python3 src/model/finetuning-bart.py
